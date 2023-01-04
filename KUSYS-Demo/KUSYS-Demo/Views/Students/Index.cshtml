@@ -1,0 +1,71 @@
+﻿@model IEnumerable<KUSYS_Demo.Models.Student>
+
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    string Role = User.Claims.FirstOrDefault(x => x.Type == System.Security.Claims.ClaimTypes.Role).Value;
+}
+
+
+<h1>Students</h1>
+
+<hr />
+
+@if (Role == "Admin")
+{
+    <p>
+        <a class="btn btn-primary" asp-action="Create">Create New</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BirthDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BirthDate)
+                </td>
+                <td>
+                    @if (Role == "Admin")
+                    {
+                        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.StudentId">Edit</a>
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.StudentId">Delete</a>
+                    }
+
+                    <a class="btn btn-info" data-toggle="modal" data-target="@("#DetailStudent-"+item.StudentId)" data-url="@Url.Action($"Details/{item.StudentId}")">Details</a>
+                    @await Html.PartialAsync("Detail_PartialView",item)
+
+
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
